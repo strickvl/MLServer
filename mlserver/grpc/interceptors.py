@@ -22,8 +22,7 @@ class LoggingInterceptor(ServerInterceptor):
         handler_call_details: HandlerCallDetails,
     ) -> RpcMethodHandler:
         logger.info(self._get_log_message(handler_call_details))
-        handler = await continuation(handler_call_details)
-        return handler
+        return await continuation(handler_call_details)
 
 
 class PromServerInterceptor(ServerInterceptor):

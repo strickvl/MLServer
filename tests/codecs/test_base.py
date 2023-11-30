@@ -31,7 +31,7 @@ def test_deprecated_methods(caplog):
 
     decoded = NumpyCodec.decode(request_input)
 
-    assert any(["DEPRECATED" in rec.message for rec in caplog.records])
+    assert any("DEPRECATED" in rec.message for rec in caplog.records)
     np.testing.assert_array_equal(decoded, expected)
 
 

@@ -71,10 +71,7 @@ def _pack_bytes(unpacked: List[ListElement]) -> bytes:
 
 
 def _ensure_bytes(elem: ListElement) -> bytes:
-    if isinstance(elem, str):
-        return encode_str(elem)
-
-    return elem
+    return encode_str(elem) if isinstance(elem, str) else elem
 
 
 def _unpack_tensor(elem: InputOrOutput, raw: bytes) -> list:

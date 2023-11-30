@@ -152,12 +152,8 @@ class RequestCodec:
 def _find_codec_by_payload(
     payload: Any, codecs: Iterable[Union[RequestCodec, InputCodec]]
 ) -> Optional[Union[RequestCodec, InputCodec]]:
-    matching_codecs = []
-    for codec in codecs:
-        if codec.can_encode(payload):
-            matching_codecs.append(codec)
-
-    if len(matching_codecs) == 0:
+    matching_codecs = [codec for codec in codecs if codec.can_encode(payload)]
+    if not matching_codecs:
         logger.warning(f"No codec was found for payload with type {type(payload)}.")
         return None
 
@@ -175,12 +171,8 @@ def _find_codec_by_payload(
 def _find_codec_by_type_hint(
     type_hint: Type, codecs: Iterable[Union[RequestCodec, InputCodec]]
 ) -> Optional[Union[RequestCodec, InputCodec]]:
-    matching_codecs = []
-    for codec in codecs:
-        if codec.TypeHint == type_hint:
-            matching_codecs.append(codec)
-
-    if len(matching_codecs) == 0:
+    matching_codecs = [codec for codec in codecs if codec.TypeHint == type_hint]
+    if not matching_codecs:
         logger.warning(f"No codec was found for type hint {type_hint}.")
         return None
 

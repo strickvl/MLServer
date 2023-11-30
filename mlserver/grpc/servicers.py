@@ -63,12 +63,7 @@ class InferenceServicer(GRPCInferenceServiceServicer):
     async def ModelInfer(
         self, request: pb.ModelInferRequest, context: grpc.ServicerContext
     ) -> pb.ModelInferResponse:
-        return_raw = False
-        if request.raw_input_contents:
-            # If the request contains raw input contents, then use the same for
-            # the output
-            return_raw = True
-
+        return_raw = bool(request.raw_input_contents)
         payload = ModelInferRequestConverter.to_types(request)
 
         request_headers = to_headers(context)
@@ -78,13 +73,11 @@ class InferenceServicer(GRPCInferenceServiceServicer):
             payload=payload, name=request.model_name, version=request.model_version
         )
 
-        response_headers = extract_headers(result)
-        if response_headers:
+        if response_headers := extract_headers(result):
             response_metadata = to_metadata(response_headers)
             context.set_trailing_metadata(response_metadata)
 
-        response = ModelInferResponseConverter.from_types(result, use_raw=return_raw)
-        return response
+        return ModelInferResponseConverter.from_types(result, use_raw=return_raw)
 
     async def RepositoryIndex(
         self, request: pb.RepositoryIndexRequest, context

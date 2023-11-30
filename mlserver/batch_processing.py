@@ -41,17 +41,16 @@ async def _get_error(response):
     Returns the InferenceServerException object if response
     indicates the error. If no error then return None
     """
-    if response.status != 200:
-        result = await response.read()
-        error_response = json.loads(result) if len(result) else {"error": ""}
-        try:
-            return httpclient.InferenceServerException(msg=error_response["error"])
-        except KeyError:
-            return httpclient.InferenceServerException(
-                msg=json.dumps(error_response["detail"])
-            )
-    else:
+    if response.status == 200:
         return None
+    result = await response.read()
+    error_response = json.loads(result) if len(result) else {"error": ""}
+    try:
+        return httpclient.InferenceServerException(msg=error_response["error"])
+    except KeyError:
+        return httpclient.InferenceServerException(
+            msg=json.dumps(error_response["detail"])
+        )
 
 
 httpclient._get_error = _get_error
@@ -124,10 +123,7 @@ class TritonRequest:
             )
             outputs.append(new_output)
 
-        if inference_request.id is None:
-            request_id = ""
-        else:
-            request_id = inference_request.id
+        request_id = "" if inference_request.id is None else inference_request.id
         return TritonRequest(request_id, inputs, outputs)
 
 
@@ -151,15 +147,13 @@ def infer_result_to_infer_response(item: httpclient.InferResult) -> InferenceRes
 
         outputs.append(output)
 
-    inference_response = InferenceResponse(
+    return InferenceResponse(
         model_name=infer_response["model_name"],
         model_version=infer_response.get("model_version", None),
         id=infer_response.get("id", None),
         parameters=infer_response.get("parameters", None),
         outputs=outputs,
     )
-
-    return inference_response
 
 
 def _preprocess_headers(headers: List[str]) -> Dict[str, str]:
@@ -462,11 +456,7 @@ async def process_batch(
             f"Provided output file path '{output_data_path}' is not writable."
         )
 
-    if insecure:
-        ssl_context = False
-    else:
-        ssl_context = None
-
+    ssl_context = False if insecure else None
     triton_client = httpclient.InferenceServerClient(
         url=url,
         verbose=extra_verbose,

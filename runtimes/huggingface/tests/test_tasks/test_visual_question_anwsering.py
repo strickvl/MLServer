@@ -35,10 +35,9 @@ def visual_qa_request():
             "question": "what's that animal",
         },
     ]
-    req = HuggingfaceRequestCodec.encode_request(
+    return HuggingfaceRequestCodec.encode_request(
         {"array_inputs": inputs}, use_bytes=False
     )
-    return req
 
 
 @pytest.fixture
@@ -53,10 +52,9 @@ def visual_qa_request_with_extra_args():
             "question": "what's that animal",
         },
     ]
-    req = HuggingfaceRequestCodec.encode_request(
+    return HuggingfaceRequestCodec.encode_request(
         {"array_inputs": inputs, "top_k": 1}, use_bytes=False
     )
-    return req
 
 
 async def test_infer(current_runtime, visual_qa_request):

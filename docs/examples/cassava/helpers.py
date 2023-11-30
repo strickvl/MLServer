@@ -37,11 +37,9 @@ def plot(examples, class_names, predictions=None):
         ax.set_yticks([])
 
         # Display the label and optionally prediction
-        x_label = "Label: " + name_map[class_names[label]]
+        x_label = f"Label: {name_map[class_names[label]]}"
         if prediction is not None:
-            x_label = (
-                "Prediction: " + name_map[class_names[prediction]] + "\n" + x_label
-            )
+            x_label = f"Prediction: {name_map[class_names[prediction]]}" + "\n" + x_label
             ax.xaxis.label.set_color("green" if label == prediction else "red")
         ax.set_xlabel(x_label)
 

@@ -78,7 +78,7 @@ class InferencePool:
         self._worker_registry = WorkerRegistry()
         self._settings = settings
         self._responses: Queue[ModelResponseMessage] = Queue()
-        for idx in range(self._settings.parallel_workers):
+        for _ in range(self._settings.parallel_workers):
             worker = Worker(self._settings, self._responses, self._env)
             worker.start()
             self._workers[worker.pid] = worker  # type: ignore
@@ -88,10 +88,7 @@ class InferencePool:
 
     @property
     def env_hash(self) -> Optional[str]:
-        if not self._env:
-            return None
-
-        return self._env.env_hash
+        return None if not self._env else self._env.env_hash
 
     @property
     def name(self) -> str:

@@ -55,7 +55,7 @@ class DataPlane:
 
     async def ready(self) -> bool:
         models = await self._model_registry.get_models()
-        return all([model.ready for model in models])
+        return all(model.ready for model in models)
 
     async def model_ready(self, name: str, version: Optional[str] = None) -> bool:
         model = await self._model_registry.get_model(name, version)

@@ -42,8 +42,7 @@ class HuggingFaceRuntime(MLModel):
         kwargs = HuggingfaceRequestCodec.decode_request(payload)
         args = kwargs.pop("args", [])
 
-        array_inputs = kwargs.pop("array_inputs", [])
-        if array_inputs:
+        if array_inputs := kwargs.pop("array_inputs", []):
             args = [list(array_inputs)] + args
         prediction = self._model(*args, **kwargs)
 
@@ -67,7 +66,6 @@ class HuggingFaceRuntime(MLModel):
         return True
 
     def _merge_metadata(self) -> None:
-        meta = METADATA.get(self.hf_settings.task)
-        if meta:
+        if meta := METADATA.get(self.hf_settings.task):
             self.inputs += meta.get("inputs", [])  # type: ignore
             self.outputs += meta.get("outputs", [])  # type: ignore

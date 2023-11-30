@@ -27,10 +27,7 @@ def load_pipeline_from_settings(
     # uri = model_parameters.uri
     pipeline = _get_pipeline_class(hf_settings)
 
-    batch_size = 1
-    if settings.max_batch_size:
-        batch_size = settings.max_batch_size
-
+    batch_size = settings.max_batch_size if settings.max_batch_size else 1
     tokenizer = hf_settings.pretrained_tokenizer
     if not tokenizer:
         tokenizer = hf_settings.pretrained_model

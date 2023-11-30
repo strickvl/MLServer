@@ -72,10 +72,7 @@ class MultiInputRequestCodec(RequestCodec):
             default_codec = find_input_codec(data.parameters.content_type)
         if default_codec is None:
             default_codec = cls.DefaultCodec
-        if isinstance(data, InferenceRequest):
-            fields = data.inputs
-        else:
-            fields = data.outputs  # type: ignore
+        fields = data.inputs if isinstance(data, InferenceRequest) else data.outputs
         for field in fields:
             if not field.parameters:
                 field_codec[field.name] = default_codec
@@ -83,8 +80,7 @@ class MultiInputRequestCodec(RequestCodec):
             if not field.parameters.content_type:
                 field_codec[field.name] = default_codec
                 continue
-            codec = find_input_codec(field.parameters.content_type)
-            if codec:
+            if codec := find_input_codec(field.parameters.content_type):
                 field_codec[field.name] = codec
             else:
                 field_codec[field.name] = default_codec
@@ -93,7 +89,7 @@ class MultiInputRequestCodec(RequestCodec):
     @classmethod
     def _can_encode_request(cls, payload: Dict[str, Any]) -> bool:
         field_codecs = cls._find_encode_codecs(payload)
-        return bool(all(field_codecs.values()))
+        return all(field_codecs.values())
 
     @classmethod
     def can_encode(cls, payload: Dict[str, Any]) -> bool:
@@ -144,9 +140,7 @@ class MultiInputRequestCodec(RequestCodec):
             data[item.name] = value
             if not item.name.startswith("output_"):
                 is_list = False
-        if not is_list:
-            return data
-        return [data[key] for key in sorted(data)]
+        return data if not is_list else [data[key] for key in sorted(data)]
 
     @classmethod
     def encode_request(cls, payload: Dict[str, Any], **kwargs) -> InferenceRequest:

@@ -91,7 +91,7 @@ class RESTServer:
         if self._settings.logging_settings:
             # If not None, use ours. Otherwise, let Uvicorn fall back on its
             # own config.
-            kwargs.update({"log_config": self._settings.logging_settings})
+            kwargs["log_config"] = self._settings.logging_settings
 
         return uvicorn.Config(self._app, **kwargs)
 

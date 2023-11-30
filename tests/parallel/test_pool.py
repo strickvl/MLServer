@@ -107,7 +107,7 @@ async def test_start_worker_new_model(
 
 
 async def test_close(inference_pool: InferencePool):
-    worker_pids = [pid for pid in inference_pool._workers]
+    worker_pids = list(inference_pool._workers)
 
     await inference_pool.close()
 

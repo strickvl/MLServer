@@ -16,14 +16,11 @@ class HealthEndpointFilter(logging.Filter):
             return True
 
         request_method = record.args[1]
-        query_string = record.args[2]
         if request_method != "GET":
             return True
 
-        if query_string in ["/v2/health/live", "/v2/health/ready"]:
-            return False
-
-        return True
+        query_string = record.args[2]
+        return query_string not in ["/v2/health/live", "/v2/health/ready"]
 
 
 def disable_health_access_logs() -> None:

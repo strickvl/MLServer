@@ -205,9 +205,9 @@ class MLModel:
         Otherwise, it will fall back to the codec specified in the
         ``default_codec`` kwarg.
         """
-        inference_response = encode_inference_response(payload, self._settings)
-
-        if inference_response:
+        if inference_response := encode_inference_response(
+            payload, self._settings
+        ):
             return inference_response
 
         if default_codec:
@@ -231,11 +231,9 @@ class MLModel:
         Otherwise, it will fall back to the codec specified in the
         ``default_codec`` kwarg.
         """
-        response_output = encode_response_output(
+        if response_output := encode_response_output(
             payload, request_output, self._outputs_index
-        )
-
-        if response_output:
+        ):
             return response_output
 
         if default_codec:

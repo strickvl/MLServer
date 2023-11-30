@@ -115,12 +115,10 @@ def white_box_model(
     model = model_class()
     model.fit(X_train, y_train)
 
-    # Save model
-    if "sklearn" in model_class.__module__:
-        model_uri = os.path.join(tmp_path, "model.joblib")
-        joblib.dump(model, model_uri)
-    else:
+    if "sklearn" not in model_class.__module__:
         raise ValueError(f"Unsupported model type: {model_class.__name__}")
+    model_uri = os.path.join(tmp_path, "model.joblib")
+    joblib.dump(model, model_uri)
     return model, model_uri, X_train[:test_size]
 
 

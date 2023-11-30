@@ -73,7 +73,7 @@ class AlibiDetectRuntime(MLModel):
             mlserver.register("seldon_model_drift", "Drift metrics")
 
             # Check whether an online drift detector (i.e. has a save_state method)
-            self._online = True if hasattr(self._model, "save_state") else False
+            self._online = bool(hasattr(self._model, "save_state"))
         except (
             ValueError,
             FileNotFoundError,
@@ -104,12 +104,10 @@ class AlibiDetectRuntime(MLModel):
         )
 
     def _get_batched_request(self) -> InferenceRequest:
-        # Build requests dictionary with mocked IDs.
-        # This is required by the BatchedRequests util.
-        inference_requests = {}
-        for idx, inference_request in enumerate(self._batch):
-            inference_requests[str(idx)] = inference_request
-
+        inference_requests = {
+            str(idx): inference_request
+            for idx, inference_request in enumerate(self._batch)
+        }
         batched = BatchedRequests(inference_requests)
         self._batch = []
         return batched.merged_request
@@ -157,12 +155,10 @@ class AlibiDetectRuntime(MLModel):
                 mlserver.log(seldon_model_drift=is_drift_instance)
 
     def _encode_response(self, y: dict) -> InferenceResponse:
-        outputs = []
-        for key in y["data"]:
-            outputs.append(
-                NumpyCodec.encode_output(name=key, payload=np.array(y["data"][key]))
-            )
-
+        outputs = [
+            NumpyCodec.encode_output(name=key, payload=np.array(y["data"][key]))
+            for key in y["data"]
+        ]
         # Add headers
         y["meta"]["headers"] = {
             "x-seldon-alibi-type": self.alibi_type,
@@ -187,11 +183,10 @@ class AlibiDetectRuntime(MLModel):
         dictionary containing data lists of length N.
         """
         data: Dict[str, list] = {key: [] for key in pred[0]["data"].keys()}
-        for i, pred_i in enumerate(pred):
+        for pred_i in pred:
             for key in data:
                 data[key].append(pred_i["data"][key])
-        y = {"data": data, "meta": pred[0]["meta"]}
-        return y
+        return {"data": data, "meta": pred[0]["meta"]}
 
     @property
     def _should_save_state(self) -> bool:

@@ -71,8 +71,7 @@ class AdaptiveBatcher:
         async_response = self._async_responses[internal_id]
 
         try:
-            response = await async_response
-            return response
+            return await async_response
         finally:
             del self._async_responses[internal_id]
 
@@ -87,8 +86,7 @@ class AdaptiveBatcher:
         )
 
     def _batching_task_callback(self, batching_task: Task):
-        err = batching_task.exception()
-        if err:
+        if err := batching_task.exception():
             # Clear queue
             self._clear_queue(err)
 

@@ -17,9 +17,7 @@ SELDON_MODEL_VERSION_LABEL = "model_version"
 def model_context(model_settings: ModelSettings):
     model_name_token = model_name_var.set(model_settings.name)
 
-    model_version = ""
-    if model_settings.version:
-        model_version = model_settings.version
+    model_version = model_settings.version if model_settings.version else ""
     model_version_token = model_version_var.set(model_version)
 
     try:

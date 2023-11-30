@@ -40,8 +40,7 @@ class ModelUpdateMessage(Message):
     serialised_model_settings: str
 
     def __init__(self, *args, **kwargs):
-        model_settings = kwargs.pop("model_settings", None)
-        if model_settings:
+        if model_settings := kwargs.pop("model_settings", None):
             as_dict = model_settings.dict()
             # Ensure the private `_source` attr also gets serialised
             if model_settings._source:

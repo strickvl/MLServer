@@ -41,10 +41,7 @@ def _to_response_output(series: pd.Series, use_bytes: bool = True) -> ResponseOu
         data, content_type = _process_bytes(data, use_bytes)
 
     shape = inject_batch_dimension(list(series.shape))
-    parameters = None
-    if content_type:
-        parameters = Parameters(content_type=content_type)
-
+    parameters = Parameters(content_type=content_type) if content_type else None
     return ResponseOutput(
         name=series.name,
         shape=shape,

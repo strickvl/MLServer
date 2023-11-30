@@ -34,15 +34,13 @@ def income_data() -> dict:
     feature_names = adult.feature_names
     category_map = adult.category_map
 
-    # Package into dictionary
-    data_dict = {
+    return {
         "X": X,
         "Y": Y,
         "feature_names": feature_names,
         "category_map": category_map,
         "target_names": adult.target_names,
     }
-    return data_dict
 
 
 def case_tree_shap(

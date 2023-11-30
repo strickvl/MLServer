@@ -15,10 +15,7 @@ ModelReloadHook = Callable[[MLModel, MLModel], Awaitable[MLModel]]
 
 
 def _get_version(model_settings: ModelSettings) -> Optional[str]:
-    if model_settings.parameters:
-        return model_settings.parameters.version
-
-    return None
+    return model_settings.parameters.version if model_settings.parameters else None
 
 
 def _is_newer(a: MLModel, b: MLModel) -> int:
@@ -85,9 +82,7 @@ class SingleModelRegistry:
         if self._default is None:
             if self._versions:
                 version_key = cmp_to_key(_is_newer)
-                latest_model = max(self._versions.values(), key=version_key)
-                return latest_model
-
+                return max(self._versions.values(), key=version_key)
         return self._default
 
     def _clear_default(self):
@@ -226,11 +221,7 @@ class SingleModelRegistry:
 
     def _find_model(self, version: Optional[str] = None) -> Optional[MLModel]:
         if version:
-            if version not in self._versions:
-                return None
-
-            return self._versions[version]
-
+            return None if version not in self._versions else self._versions[version]
         return self.default
 
     async def get_model(self, version: Optional[str] = None) -> MLModel:
@@ -259,10 +250,7 @@ class SingleModelRegistry:
         self._refresh_default(model)
 
     def empty(self) -> bool:
-        if self._versions:
-            return False
-
-        return self.default is None
+        return False if self._versions else self.default is None
 
 
 class MultiModelRegistry:

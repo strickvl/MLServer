@@ -19,7 +19,7 @@ async def test_tracing(
     _ = await rest_client.infer(sum_model.name, inference_request)
 
     spans = [json.loads(span.to_json()) for span in span_exporter.get_finished_spans()]
-    assert len(spans) > 0
+    assert spans
 
     trace_ids = set()
     for s in spans:

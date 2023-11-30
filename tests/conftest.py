@@ -40,8 +40,7 @@ def assert_not_called_with(self, *args, **kwargs):
     except AssertionError:
         return
     raise AssertionError(
-        "Expected %s to not have been called."
-        % self._format_mock_call_signature(args, kwargs)
+        f"Expected {self._format_mock_call_signature(args, kwargs)} to not have been called."
     )
 
 
@@ -63,9 +62,7 @@ async def env_tarball(tmp_path: str) -> str:
 
 @pytest.fixture
 async def env(env_tarball: str, tmp_path: str) -> Environment:
-    env = await Environment.from_tarball(env_tarball, str(tmp_path))
-    yield env
-
+    yield await Environment.from_tarball(env_tarball, tmp_path)
     # Envs can be quite heavy, so let's make sure we're clearing them up once
     # the test finishes
     shutil.rmtree(tmp_path)
@@ -224,7 +221,7 @@ def model_folder(tmp_path: str) -> str:
         dst = os.path.join(tmp_path, file_name)
         shutil.copyfile(src, dst)
 
-    return str(tmp_path)
+    return tmp_path
 
 
 @pytest.fixture
@@ -262,7 +259,7 @@ def _mlserver_settings(settings: Settings, tmp_path: str):
     settings.http_port = http_port
     settings.grpc_port = grpc_port
     settings.metrics_port = metrics_port
-    settings.metrics_dir = str(tmp_path)
+    settings.metrics_dir = tmp_path
 
     return settings
 

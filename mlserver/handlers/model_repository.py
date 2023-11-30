@@ -23,14 +23,12 @@ class ModelRepositoryHandlers:
         repository_items = []
         for model_settings in all_model_settings:
             index_item = await self._to_item(model_settings)
-            if payload.ready:
-                # TODO: If filtering by ready, we could ready directly from the
-                # active model registry
-                if index_item.state == State.READY:
-                    repository_items.append(index_item)
-            else:
+            if (
+                payload.ready
+                and index_item.state == State.READY
+                or not payload.ready
+            ):
                 repository_items.append(index_item)
-
         return RepositoryIndexResponse(__root__=repository_items)
 
     async def _to_item(

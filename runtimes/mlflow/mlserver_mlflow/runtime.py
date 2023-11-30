@@ -111,10 +111,9 @@ class MLflowRuntime(MLModel):
         if charset != "utf-8":
             raise InferenceError("The scoring server only supports UTF-8")
 
-        unexpected_content_parameters = set(parameter_values.keys()).difference(
-            {"charset"}
-        )
-        if unexpected_content_parameters:
+        if unexpected_content_parameters := set(
+            parameter_values.keys()
+        ).difference({"charset"}):
             err_message = (
                 f"Unrecognized content type parameters: "
                 f"{', '.join(unexpected_content_parameters)}."

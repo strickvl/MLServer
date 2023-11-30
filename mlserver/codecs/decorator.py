@@ -38,22 +38,11 @@ def _as_list(a: Optional[Union[Any, Tuple[Any]]]) -> List[Any]:
         # Split into components
         return list(a)
 
-    if get_origin(a) is tuple:
-        # Convert type arguments into list
-        return list(get_args(a))
-
-    # Otherwise, assume it's a single element
-    return [a]
+    return list(get_args(a)) if get_origin(a) is tuple else [a]
 
 
 def _is_codec_type(c: Codec, t: Type) -> bool:
-    if issubclass(c, t):  # type: ignore
-        return True
-
-    if isinstance(c, t):
-        return True
-
-    return False
+    return True if issubclass(c, t) else isinstance(c, t)
 
 
 _is_input_codec = partial(_is_codec_type, t=InputCodec)
@@ -169,11 +158,14 @@ class SignatureCodec(RequestCodec):
         return inputs
 
     def _get_request_codec(self) -> Optional[Tuple[str, RequestCodec]]:
-        for name, codec in self._input_codecs.items():
-            if _is_request_codec(codec):
-                return name, codec  # type: ignore
-
-        return None
+        return next(
+            (
+                (name, codec)
+                for name, codec in self._input_codecs.items()
+                if _is_request_codec(codec)
+            ),
+            None,
+        )
 
     def encode_response(  # type: ignore
         self, model_name: str, payload: Any, model_version: Optional[str] = None

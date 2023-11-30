@@ -54,28 +54,26 @@ def _merge_input_parameters(
     if not parametrised_obj.parameters:
         return all_params
     obj_params = parametrised_obj.parameters.dict()
-    if all_params == {}:
+    if not all_params:
         return obj_params
-    else:
-        common_keys = set(all_params).intersection(set(obj_params)) - {
-            "content_type",
-            "headers",
-        }
-        uncommon_keys = set(all_params).union(set(obj_params)) - common_keys
-        new_all_params = {}
-        for key in common_keys:
-            if type(all_params[key]) == list:
-                new_value = all_params[key] + [obj_params[key]]
-                new_all_params[key] = new_value
-            else:
-                new_value = [all_params[key]]
-                new_value.append(obj_params[key])
-                new_all_params[key] = new_value
-        for key in uncommon_keys:
-            if key in all_params.keys():
-                new_all_params[key] = all_params[key]
-            if key in obj_params.keys():
-                new_all_params[key] = obj_params[key]
+    common_keys = set(all_params).intersection(set(obj_params)) - {
+        "content_type",
+        "headers",
+    }
+    uncommon_keys = set(all_params).union(set(obj_params)) - common_keys
+    new_all_params = {}
+    for key in common_keys:
+        new_value = (
+            all_params[key] + [obj_params[key]]
+            if type(all_params[key]) == list
+            else [all_params[key], obj_params[key]]
+        )
+        new_all_params[key] = new_value
+    for key in uncommon_keys:
+        if key in all_params:
+            new_all_params[key] = all_params[key]
+        if key in obj_params.keys():
+            new_all_params[key] = obj_params[key]
     return new_all_params
 
 
@@ -90,11 +88,7 @@ def _merge_data(
     if isinstance(sampled_datum, bytes):
         return b"".join(all_data)  # type: ignore
 
-    if isinstance(sampled_datum, list):
-        return sum(all_data, [])
-
-    # TODO: Should we raise an error if we couldn't merge the data?
-    return all_data
+    return sum(all_data, []) if isinstance(sampled_datum, list) else all_data
 
 
 class BatchedRequests:
@@ -185,7 +179,7 @@ class BatchedRequests:
         self, request_outputs: Dict[str, RequestOutput]
     ) -> RequestOutput:
         all_params: dict = {}
-        for internal_id, request_output in request_outputs.items():
+        for request_output in request_outputs.values():
             all_params = _merge_parameters(all_params, request_output)
 
         parameters = Parameters(**all_params) if all_params else None

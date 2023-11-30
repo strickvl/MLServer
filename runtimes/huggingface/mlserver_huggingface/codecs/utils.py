@@ -119,11 +119,9 @@ class Convertor:
 
 
 class EqualUtil:
-    def pil_equal(img1: "Image.Image", img2: "Image.Image") -> bool:
-        diff = ImageChops.difference(img1, img2)
-        if diff.getbbox() is None:
-            return True
-        return False
+    def pil_equal(self, img2: "Image.Image") -> bool:
+        diff = ImageChops.difference(self, img2)
+        return diff.getbbox() is None
 
     @staticmethod
     def list_equal(list1: List[Any], list2: List[Any]) -> bool:
@@ -142,22 +140,18 @@ class EqualUtil:
             elif isinstance(el, np.ndarray):
                 if not np.array_equal(el, list2[idx]):
                     return False
-            else:
-                if el != list2[idx]:
-                    return False
+            elif el != list2[idx]:
+                return False
         return True
 
     @staticmethod
     def dict_equal(dict1: Dict[Any, Any], dict2: Dict[Any, Any]) -> bool:
-        if not set(dict1.keys()) == set(dict2.keys()):
+        if set(dict1.keys()) != set(dict2.keys()):
             return False
         for k, v in dict1.items():
             if isinstance(v, Image.Image):
-                pass
-            elif isinstance(v, Image.Image):
-                if not EqualUtil.pil_equal(v, dict2[k]):
-                    return False
-            elif isinstance(v, dict):
+                continue
+            if isinstance(v, dict):
                 if not EqualUtil.dict_equal(v, dict2[k]):
                     return False
             elif isinstance(v, list):
@@ -166,7 +160,6 @@ class EqualUtil:
             elif isinstance(v, np.ndarray):
                 if not np.array_equal(v, dict2[k]):
                     return False
-            else:
-                if v != dict2[k]:
-                    return False
+            elif v != dict2[k]:
+                return False
         return True

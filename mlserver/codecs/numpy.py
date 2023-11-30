@@ -57,9 +57,7 @@ def to_datatype(dtype: np.dtype) -> str:
         # If not present, try with kind
         as_str = getattr(dtype, "kind")
 
-    datatype = _NumpyToDatatype[as_str]
-
-    return datatype
+    return _NumpyToDatatype[as_str]
 
 
 def _to_ndarray(input_or_output: InputOrOutput) -> np.ndarray:
@@ -105,7 +103,7 @@ class NumpyCodec(InputCodec):
     TypeHint = np.ndarray
 
     @classmethod
-    def can_encode(csl, payload: Any) -> bool:
+    def can_encode(cls, payload: Any) -> bool:
         return isinstance(payload, np.ndarray)
 
     @classmethod

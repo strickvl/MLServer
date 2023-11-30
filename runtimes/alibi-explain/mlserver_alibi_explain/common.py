@@ -39,21 +39,18 @@ def convert_from_bytes(output: ResponseOutput, ty: Optional[Type] = None) -> Any
 
     if ty == str:
         return bytearray(output.data[0]).decode("UTF-8")
-    else:
-        py_str = bytearray(output.data[0]).decode("UTF-8")
+    py_str = bytearray(output.data[0]).decode("UTF-8")
 
-        from ast import literal_eval
+    from ast import literal_eval
 
-        return literal_eval(py_str)
+    return literal_eval(py_str)
 
 
 # TODO: add retry and better exceptions handling
 def remote_predict(
     v2_payload: InferenceRequest, predictor_url: str, ssl_verify_path: str
 ) -> InferenceResponse:
-    verify: Union[str, bool] = True
-    if ssl_verify_path != "":
-        verify = ssl_verify_path
+    verify = ssl_verify_path if ssl_verify_path != "" else True
     response_raw = requests.post(
         predictor_url,
         json=v2_payload.dict(),
@@ -67,9 +64,7 @@ def remote_predict(
 
 def remote_metadata(url: str, ssl_verify_path: str) -> MetadataModelResponse:
     """Get metadata from v2 endpoint"""
-    verify: Union[str, bool] = True
-    if ssl_verify_path != "":
-        verify = ssl_verify_path
+    verify = ssl_verify_path if ssl_verify_path != "" else True
     response_raw = requests.get(url, verify=verify)
     if response_raw.status_code != 200:
         raise RemoteInferenceError(response_raw.status_code, response_raw.reason)
@@ -101,8 +96,9 @@ class AlibiExplainSettings(BaseSettings):
 
 def import_and_get_class(class_path: str) -> type:
     last_dot = class_path.rfind(".")
-    klass = getattr(import_module(class_path[:last_dot]), class_path[last_dot + 1 :])
-    return klass
+    return getattr(
+        import_module(class_path[:last_dot]), class_path[last_dot + 1 :]
+    )
 
 
 def to_v2_inference_request(
@@ -133,22 +129,18 @@ def to_v2_inference_request(
     input_name = _DEFAULT_INPUT_NAME
     id_name = generate_uuid()
     default_outputs = []
-    outputs = []
-
-    if output:
-        outputs = [RequestOutput(name=output)]
-
+    outputs = [RequestOutput(name=output)] if output else []
     if metadata is not None:
         if metadata.inputs:
             # we only support a big single input numpy
             input_name = metadata.inputs[0].name
-        if metadata.outputs:
-            if not output:
+        if not output:
+            if metadata.outputs:
                 default_outputs = [metadata.outputs[0]]
 
     # For List[str] (e.g. AnchorText), we use StringCodec for input
     input_payload_codec = StringCodec if type(input_data) == list else NumpyCodec
-    v2_request = InferenceRequest(
+    return InferenceRequest(
         id=id_name,
         parameters=Parameters(content_type=input_payload_codec.ContentType),
         # TODO: we probably need to tell alibi about the expected types to use
@@ -162,4 +154,3 @@ def to_v2_inference_request(
         ],
         outputs=outputs if outputs else default_outputs,
     )
-    return v2_request

@@ -46,6 +46,6 @@ async def test_metrics(
             "parallel_request_",
         )
         metrics_list = list(iter(metrics))
-        assert len(metrics_list) > 0
+        assert metrics_list
         for metric in metrics_list:
             assert metric.name.startswith(expected_prefixes)

@@ -17,10 +17,7 @@ async def model_registry(
     model_registry: MultiModelRegistry, mocker
 ) -> MultiModelRegistry:
     async def _async_val(model: MLModel, new_model: MLModel = None) -> MLModel:
-        if new_model:
-            return new_model
-
-        return model
+        return new_model if new_model else model
 
     load_stub = mocker.stub("_on_model_load")
     load_stub.side_effect = _async_val
@@ -234,7 +231,7 @@ async def test_model_not_ready(model_registry: MultiModelRegistry):
     await asyncio.sleep(0.1)
 
     models = list(await model_registry.get_models())
-    assert not all([m.ready for m in models])
+    assert not all(m.ready for m in models)
     assert len(models) == 2
 
     # Cancel slow load task
@@ -273,7 +270,7 @@ async def test_rolling_reload(
 
     # Assert that the old model stays ready while the new version is getting loaded
     models = list(await model_registry.get_models())
-    assert all([m.ready for m in models])
+    assert all(m.ready for m in models)
     assert len(models) == 1
 
     # Cancel slow reload task

@@ -43,9 +43,7 @@ def dataset() -> tuple:
 @pytest.fixture
 def model_signature(dataset: tuple) -> ModelSignature:
     X, y = dataset
-    signature = infer_signature(X, y)
-
-    return signature
+    return infer_signature(X, y)
 
 
 @pytest.fixture

@@ -46,7 +46,7 @@ def classifier_uri(tmp_path) -> str:
     c = 5
 
     X_train = np.random.rand(n, d)
-    y_train = [label for label in range(0, c)]
+    y_train = list(range(0, c))
     clf = xgb.XGBClassifier(
         num_class=c, use_label_encoder=False, objective="multi:softprob"
     )

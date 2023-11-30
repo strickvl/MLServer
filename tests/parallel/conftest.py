@@ -37,10 +37,7 @@ async def dispatcher(inference_pool) -> Dispatcher:
 
 @pytest.fixture
 async def error_model(inference_pool: InferencePool, error_model: MLModel) -> MLModel:
-    model = await inference_pool.load_model(error_model)
-
-    yield model
-
+    yield await inference_pool.load_model(error_model)
     await inference_pool.unload_model(error_model)
 
 
@@ -51,15 +48,13 @@ async def load_error_model() -> MLModel:
         implementation=ErrorModel,
         parameters=ModelParameters(load_error=True),
     )
-    error_model = ErrorModel(error_model_settings)
-
-    yield error_model
+    yield ErrorModel(error_model_settings)
 
 
 @pytest.fixture
 def settings(settings: Settings, tmp_path: str) -> Settings:
     settings.parallel_workers = 2
-    settings.environments_dir = str(tmp_path)
+    settings.environments_dir = tmp_path
 
     configure_inference_pool(settings)
     return settings

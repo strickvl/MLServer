@@ -7,7 +7,7 @@ from mlserver.metrics.prometheus import PrometheusEndpoint
 
 
 def test_get_registry(prometheus_endpoint: PrometheusEndpoint, settings: Settings):
-    collectors = [c for c in prometheus_endpoint._registry._collector_to_names.keys()]
+    collectors = list(prometheus_endpoint._registry._collector_to_names.keys())
 
     assert len(collectors) == 1
     assert isinstance(collectors[0], MultiProcessCollector)

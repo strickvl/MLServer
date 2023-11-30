@@ -42,7 +42,7 @@ def build_request(data: np.ndarray, **explain_kwargs) -> InferenceRequest:
     """
     Build an inference request from a numpy array.
     """
-    inference_request = InferenceRequest(
+    return InferenceRequest(
         parameters=Parameters(
             content_type=NumpyCodec.ContentType,
             explain_parameters=explain_kwargs,
@@ -56,7 +56,6 @@ def build_request(data: np.ndarray, **explain_kwargs) -> InferenceRequest:
             )
         ],
     )
-    return inference_request
 
 
 def build_test_case(

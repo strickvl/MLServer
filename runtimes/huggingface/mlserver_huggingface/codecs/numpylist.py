@@ -19,11 +19,11 @@ class NumpyListCodec(InputCodec):
     ContentType = "nplist"
 
     @classmethod
-    def can_encode(csl, payload: Any) -> bool:
+    def can_encode(cls, payload: Any) -> bool:
         if not is_list_of(payload, np.ndarray):
             return False
         # only the support same shaped ndarray
-        return len(set([matrix.shape for matrix in payload])) == 1
+        return len({matrix.shape for matrix in payload}) == 1
 
     @classmethod
     def encode_output(
@@ -64,4 +64,4 @@ class NumpyListCodec(InputCodec):
     def decode_input(cls, request_input: RequestInput) -> List[np.ndarray]:
         model_data = _to_ndarray(request_input)
         reshaped = model_data.reshape(request_input.shape)
-        return [el for el in reshaped]
+        return list(reshaped)

@@ -90,7 +90,7 @@ async def test_unload_model(
     responses.get()
 
     loaded_models = list(await worker._model_registry.get_models())
-    assert len(loaded_models) == 0
+    assert not loaded_models
 
 
 async def test_exception(

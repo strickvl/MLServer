@@ -84,8 +84,7 @@ class AsyncResponses:
         future = self._futures[message_id]
 
         try:
-            response_message = await future
-            return response_message
+            return await future
         finally:
             self._clear_message(message_id)
 

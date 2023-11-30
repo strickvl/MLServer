@@ -329,9 +329,7 @@ class ModelSettings(BaseSettings):
     @property
     def version(self) -> Optional[str]:
         params = self.parameters
-        if params is not None:
-            return params.version
-        return None
+        return params.version if params is not None else None
 
     name: str = ""
     """Name of the model."""

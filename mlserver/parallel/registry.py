@@ -135,10 +135,7 @@ class InferencePoolRegistry:
             if model_settings.parallel_workers <= 0:
                 return False
 
-        if not self._settings.parallel_workers:
-            return False
-
-        return True
+        return bool(self._settings.parallel_workers)
 
     def model_initialiser(self, model_settings: ModelSettings) -> MLModel:
         """
@@ -213,10 +210,7 @@ class InferencePoolRegistry:
         )
 
     async def _close_pool(self, env_hash: Optional[str] = None):
-        pool = self._default_pool
-        if env_hash:
-            pool = self._pools[env_hash]
-
+        pool = self._pools[env_hash] if env_hash else self._default_pool
         logger.info(f"Waiting for shutdown of {pool.name}...")
         await pool.close()
         logger.info(f"Shutdown of {pool.name} complete")

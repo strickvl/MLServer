@@ -39,10 +39,7 @@ def inject_batch_dimension(shape: List[int]) -> List[int]:
     Utility method to ensure that 1-dimensional shapes
     assume that `[N] == [N, D]`.
     """
-    if len(shape) > 1:
-        return shape
-
-    return shape + [1]
+    return shape if len(shape) > 1 else shape + [1]
 
 
 def _get_content_type(
@@ -180,10 +177,7 @@ class SingleInputRequestCodec(RequestCodec):
 
     @classmethod
     def can_encode(cls, payload: Any) -> bool:
-        if cls.InputCodec is None:
-            return False
-
-        return cls.InputCodec.can_encode(payload)
+        return False if cls.InputCodec is None else cls.InputCodec.can_encode(payload)
 
     @classmethod
     def encode_response(

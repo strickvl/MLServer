@@ -25,7 +25,4 @@ class CassavaModel(MLModel):
         predictions = self._model(payload_tensor)
         predictions_max = tf.argmax(predictions, axis=-1)
 
-        # convert predictions to np.ndarray
-        response_data = np.array(predictions_max)
-
-        return response_data
+        return np.array(predictions_max)

@@ -24,11 +24,7 @@ class MetricsClient(RESTClient):
 
 
 def find_metric(metrics: List[Metric], name: str) -> Optional[Metric]:
-    for metric in metrics:
-        if metric.name == name:
-            return metric
-
-    return None
+    return next((metric for metric in metrics if metric.name == name), None)
 
 
 def unregister_metrics(registry: CollectorRegistry):

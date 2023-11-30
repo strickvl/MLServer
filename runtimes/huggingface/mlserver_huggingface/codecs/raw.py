@@ -13,11 +13,7 @@ class RawCodec(InputCodec):
 
     @classmethod
     def can_encode(cls, payload: Any) -> bool:
-        return (
-            isinstance(payload, int)
-            or isinstance(payload, str)
-            or isinstance(payload, float)
-        )
+        return isinstance(payload, (int, str, float))
 
     @classmethod
     def encode_output(

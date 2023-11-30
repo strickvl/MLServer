@@ -29,8 +29,9 @@ def get_model_schema(model_name: str, model_version: Optional[str]) -> dict:
     model_paths = {}
 
     for path_spec in generic_paths.items():
-        filled_path_spec = _fill_path_spec(path_spec, model_name, model_version)
-        if filled_path_spec:
+        if filled_path_spec := _fill_path_spec(
+            path_spec, model_name, model_version
+        ):
             model_path, model_spec = filled_path_spec
             model_paths[model_path] = model_spec
 
@@ -90,14 +91,12 @@ def _fill_path_spec(path_spec, model_name, model_version) -> Optional[Tuple[str,
 def _remove_prefilled_parameters(
     parameters: list, model_name: str, model_version: Optional[str]
 ) -> list:
-    filtered_parameters = []
-
     prefilled_parameter_names = [MODEL_NAME_PARAMETER]
     if model_version:
         prefilled_parameter_names.append(MODEL_VERSION_PARAMETER)
 
-    for parameter in parameters:
-        if parameter["name"] not in prefilled_parameter_names:
-            filtered_parameters.append(parameter)
-
-    return filtered_parameters
+    return [
+        parameter
+        for parameter in parameters
+        if parameter["name"] not in prefilled_parameter_names
+    ]

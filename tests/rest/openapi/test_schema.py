@@ -29,8 +29,8 @@ def test_get_model_schema(model_name: str, model_version: Optional[str]):
     paths = model_schema["paths"]
     model_endpoint = f"/v2/models/{model_name}"
     if model_version:
-        assert model_endpoint not in model_schema["paths"]
+        assert model_endpoint not in paths
         assert f"{model_endpoint}/versions/{model_version}" in paths
     else:
-        assert model_endpoint in model_schema["paths"]
+        assert model_endpoint in paths
         assert f"{model_endpoint}/versions/{{{MODEL_VERSION_PARAMETER}}}" in paths

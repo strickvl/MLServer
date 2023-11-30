@@ -70,7 +70,7 @@ async def test_predict_classifier(
     response = await classifier.predict(inference_request)
 
     input_data = inference_request.inputs[0].data
-    if len(req_outputs) == 0:
+    if not req_outputs:
         # Assert that PREDICT_OUTPUT is added by default
         req_outputs = [PREDICT_OUTPUT]
 

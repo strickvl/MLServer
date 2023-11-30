@@ -20,12 +20,11 @@ class DummyModelRepository(ModelRepository):
 
     async def find(self, name: str) -> List[ModelSettings]:
         all_settings = await self.list()
-        result = []
-        for model_settings in all_settings:
-            if model_settings.name == name:
-                result.append(model_settings)
-
-        if len(result) == 0:
+        if result := [
+            model_settings
+            for model_settings in all_settings
+            if model_settings.name == name
+        ]:
+            return result
+        else:
             raise ModelNotFound(name)
-
-        return result

@@ -108,11 +108,7 @@ class Environment:
         pattern = os.path.join(self._env_path, "lib", "python*")
         matches = glob.glob(pattern)
 
-        for match in matches:
-            if os.path.isdir(match):
-                return match
-
-        return ""
+        return next((match for match in matches if os.path.isdir(match)), "")
 
     def __enter__(self):
         self._prev_sys_path = sys.path
